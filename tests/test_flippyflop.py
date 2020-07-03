@@ -100,10 +100,10 @@ def test_get_buckets(dummy_service):
 )
 def test_todays_buckets(date, expected, freezer):
     # assuming a ff.start_date of 2019-12-31
-    freezer.move_to(date)
-    ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
-    result = ff._todays_buckets()
-    assert result == expected
+    with freeze_time(date, tick=True):
+        ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
+        result = ff._todays_buckets()
+        assert result == expected
 
 
 @pytest.mark.parametrize(
@@ -115,10 +115,11 @@ def test_todays_buckets(date, expected, freezer):
 )
 def test_todays_cards(dummy_service, freezer, date, expected):
     # assuming a ff.start_date of 2019-12-31 (and in the sheet)
-    freezer.move_to(date)
-    ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
-    result = ff.todays_cards()
-    assert result == expected
+    with freeze_time(date, tick=True):
+        ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
+        result = ff.todays_cards()
+
+        assert result == expected
 
 
 @freeze_time("2020-01-02 08:34:26", tick=True)

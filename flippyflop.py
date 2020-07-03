@@ -146,6 +146,7 @@ class FlippyFlop:
                 buckets.append(str(box))
         return buckets
 
+    @throttle
     def _get_values(self, tab, cell_range):
         sheet = self.service.spreadsheets()
         result = (
