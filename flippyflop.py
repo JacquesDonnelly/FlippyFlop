@@ -3,6 +3,8 @@ import pandas as pd
 import datetime
 import time
 
+
+# TODO: What happens if a card is deleted?
 # TODO: Use type hinting
 # TODO: Lint
 
@@ -82,7 +84,8 @@ class FlippyFlop:
     @throttle
     def add_term(self, front, back):
         largest_card = int(self.get_terms().index.max())
-        # TODO: refactor repeated chunk of code below
+        # TODO: refactor repeated chunk of code below.
+        # A single execute method to avoid need for throttle decorator
         value_range_body = {
             "values": [[largest_card + 1], [front], [back]],
             "majorDimension": "COLUMNS",
