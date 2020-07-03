@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Google Sheets Auth files
+credentials.json
+token.pickle
