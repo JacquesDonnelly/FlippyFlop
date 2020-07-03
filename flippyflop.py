@@ -4,6 +4,7 @@ import datetime
 import time
 
 # TODO: Use type hinting
+# TODO: Lint
 
 class FlippyFlop:
     def __init__(self, service, spreadsheet_id):
