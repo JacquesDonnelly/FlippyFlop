@@ -16,7 +16,7 @@ h3 {
 }
 
 .interactions {
-  margin-top: 50px;
+  margin-top: 100px;
   position: fixed;
   top: 30%;
   left: 50%;
@@ -96,26 +96,27 @@ h3 {
 
 <h1>FlippyFlop</h1>
 
-<h3>3 Cards Remaining</h3>
+<h3>{{ remaining_cards }} Cards Remaining</h3>
 
 <div class="interactions">
   <div class="flip-card">
     <div class="flip-card-inner">
       <div class="flip-card-front">
         <div class="card-content">
-          <h2>What's the capital city of France?</h2> 
+	<h2>{{ card_front }}</h2> 
         </div>
       </div>
       <div class="flip-card-back">
         <div class="card-content">
-          <b>Paris</b>
+	<b>{{ card_back }}</b>
       </div>
       </div>
     </div>
   </div>
-
-  <button class="button">Easy Peasy Lemon Squeezy</button>
-  <button class="button red">Stressed Depressed Lemon Zest</button>
+  <form method="post">
+  <button class="button" type="submit" name="action" value="success">Easy Peasy Lemon Squeezy</button>
+  <button class="button red" type="submit" name="action" value="fail">Stressed Depressed Lemon Zest</button>
+  </form>
 
 </div>
 

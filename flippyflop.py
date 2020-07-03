@@ -6,7 +6,7 @@ import time
 
 # TODO: What happens if a card is deleted?
 # TODO: Use type hinting
-# TODO: Lint
+# TODO: Add docstrings and lint
 
 class FlippyFlop:
     def __init__(self, service, spreadsheet_id):
