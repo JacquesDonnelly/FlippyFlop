@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+  text-align: center;
+}
+
+h3 {
+  text-align: center;
+}
+
+.interactions {
+  margin-top: 50px;
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.flip-card {
+  background-color: transparent;
+  width: 100%;
+  height: 200px;
+  perspective: 1000px;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+.flip-card:active .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flip-card-front {
+  background-color: #bbb;
+  color: black;
+  vertical-align: middle;
+}
+
+.flip-card-back {
+  background-color: #bbb;
+  color: black;
+  transform: rotateY(180deg);
+}
+
+.card-content {
+  flex: 0 0 90%
+}
+
+.button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  margin-top: 20px;
+  cursor: pointer;
+  height: 70px;
+  width: 100%
+}
+
+.button.red {
+  background-color: red;
+}
+
+</style>
+</head>
+<body>
+
+<h1>FlippyFlop</h1>
+
+<h3>3 Cards Remaining</h3>
+
+<div class="interactions">
+  <div class="flip-card">
+    <div class="flip-card-inner">
+      <div class="flip-card-front">
+        <div class="card-content">
+          <h2>What's the capital city of France?</h2> 
+        </div>
+      </div>
+      <div class="flip-card-back">
+        <div class="card-content">
+          <b>Paris</b>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="button">Easy Peasy Lemon Squeezy</button>
+  <button class="button red">Stressed Depressed Lemon Zest</button>
+
+</div>
+
+
+</body>
+
+
+</html>
