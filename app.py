@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, redirect
 from flask import render_template
 from googleapiclient.discovery import build
 from flippyflop import FlippyFlop 
@@ -20,8 +20,19 @@ ff = FlippyFlop(
     spreadsheet_id=spreadsheet_id
 )
 
-# TODO: Create home screen that displays before you start looking at 
-# cards and then when you have completed them all
+# TODO: Speed up usage.Reduce Duplicated calls? Cache some things? Modify/disable throttle?
+
+
+@app.route("/", methods=["GET", "POST"])
+def home():
+    remaining_cards = ff.todays_cards()
+    if request.method == "GET":
+        return render_template("home.html", remaining=len(remaining_cards))
+    if request.method == "POST":
+        if request.form["action"] == "start":
+            next_card = random.choice(remaining_cards)
+            return redirect(f"/{next_card}")
+
 
 
 @app.route('/<card_id>', methods=["GET", "POST"])
@@ -29,27 +40,21 @@ def single_card(card_id):
     if request.method == "GET":
         terms = ff.get_terms()
         term = terms.loc[card_id]
-        remaining = len(terms)
-        # TODO: refactor render to bottom of function
+        remaining_cards = ff.todays_cards()
+        # TODO: rename index.html
         return render_template(
             "index.html", 
-            remaining_cards=remaining,
+            remaining_cards=len(remaining_cards),
             card_front=term["front"],
             card_back=term["back"]
         )
     if request.method == "POST":
-        # TODO: Check below works by filling in the cards on sheets 
         success = True if request.form["action"] == "success" else False
         ff.update_bucket(card_id, success)
         remaining_cards = ff.todays_cards()
-        next_card = random.choice(remaining_cards)
-        terms = ff.get_terms()
-        term = terms.loc[next_card]
-        import pdb; pdb.set_trace()
-        return render_template(
-            "index.html", 
-            remaining_cards=remaining,
-            card_front=term["front"],
-            card_back=term["back"]
-        )
+        if remaining_cards:
+            next_card = random.choice(remaining_cards)
+            return redirect(f"/{next_card}")
+        else:
+            return redirect("/")
 

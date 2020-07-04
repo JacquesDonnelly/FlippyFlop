@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+
+</style>
+</head>
+<body>
+{% if remaining %}
+
+<h1>You have {{ remaining }} cards left to do today, good luck!</h1>
+
+<form method="post">
+  <button type="submit" name="action" value="start">Start!</button>
+</form>
+
+{% else %}
+<h1>You don't have any cards to do! Take a break!</h1>
+{% endif %}
+
+</body>
+</html>
+
+
+
+
