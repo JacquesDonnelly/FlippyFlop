@@ -1,4 +1,3 @@
-from throttle import throttle
 import pandas as pd
 import datetime
 import time
@@ -9,7 +8,7 @@ import time
 # TODO: Add docstrings and lint
 
 class FlippyFlop:
-    def __init__(self, service, spreadsheet_id):
+    def __init__(self, service, spreadsheet_id, throttle_time=1):
         self.service = service
         self.spreadsheet_id = spreadsheet_id
         # TODO: get schedule from the schedule tab
@@ -18,6 +17,23 @@ class FlippyFlop:
         # TODO: start date is actually day before start. fefactor to day 0
         self.start_date = datetime.datetime(2019, 12, 31)
         self.time_of_last_hit = time.time()
+        self.throttle_time = throttle_time 
+
+    def throttle(func):
+        def inner(self, *args, **kwargs):
+            time_since = time.time() - self.time_of_last_hit
+            if abs(time_since) > self.throttle_time:
+                _result = func(self, *args, **kwargs)
+                self.time_of_last_hit = time.time()
+                print(f"hitting sheets via {func.__name__} with args {args} and kwargs {kwargs}")
+            else:
+                time.sleep(0.1)
+                _result = inner(self, *args, **kwargs)
+    
+            return _result
+
+        return inner
+
 
     def get_terms(self):
         """All terms in the terms tab"""

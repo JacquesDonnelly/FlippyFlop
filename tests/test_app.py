@@ -16,4 +16,4 @@ def client():
 def test_sandbox(client):
     rv = client.get('/')
 
-    assert 0
+    # assert 0

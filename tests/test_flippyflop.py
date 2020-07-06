@@ -173,6 +173,7 @@ def test_add_term(dummy_service):
         back="A Blanket",
     )
 
+
     assert ff.get_terms().values[-1].tolist() == [
         "What should horses in training wear in the stable?",
         "A Blanket",
