@@ -148,10 +148,7 @@ def test_todays_cards(dummy_service, freezer, date, expected):
 def test_update_bucket(card, success, expected, freezer, dummy_service):
     ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
     ff.update_bucket(card, success)
-    # FIXME: After adding the throttle decorator it meant that we had to
-    # introduce a ticking time freeze. Hence we cannot be exactly certain of
-    # the expected times. This test should be refactored because now it is
-    # disgusting...
+    # TODO: Refactor. After adding the throttle decorator this is messy.
     new_buckets = ff.get_buckets()
     result = new_buckets.reset_index().values.tolist()
     result_times = [int(row[-1]) for row in result]
