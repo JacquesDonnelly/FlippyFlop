@@ -8,14 +8,12 @@ import time
 # TODO: Add docstrings and lint
 
 class FlippyFlop:
-    def __init__(self, service, spreadsheet_id, throttle_time=1):
+    def __init__(self, service, spreadsheet_id, throttle_time=1, day_zero=datetime.datetime(2019, 12, 31)):
         self.service = service
         self.spreadsheet_id = spreadsheet_id
         # TODO: get schedule from the schedule tab
         self.schedule = [(1, 1), (2, 2), (3, 3), (5, 4), (9, 5)]
-        # TODO: start date should be a parameter
-        # TODO: start date is actually day before start. fefactor to day 0
-        self.start_date = datetime.datetime(2019, 12, 31)
+        self.day_zero = day_zero
         self.time_of_last_hit = time.time()
         self.throttle_time = throttle_time 
 
@@ -123,7 +121,7 @@ class FlippyFlop:
         buckets = []
         for period, box in self.schedule:
             if (
-                datetime.datetime.utcnow() - self.start_date
+                datetime.datetime.utcnow() - self.day_zero
             ).days % period == 0:
                 buckets.append(str(box))
         return buckets

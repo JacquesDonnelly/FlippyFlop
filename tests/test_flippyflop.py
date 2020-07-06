@@ -108,10 +108,7 @@ def test_todays_buckets(date, expected, freezer):
 
 @pytest.mark.parametrize(
     "date,expected",
-    [
-        ("2020-01-01 10:00:00", ["3"]),
-        ("2020-01-02 10:00:00", ["1", "2", "3"]),
-    ],
+    [("2020-01-01 10:00:00", ["3"]), ("2020-01-02 10:00:00", ["1", "2", "3"]),],
 )
 def test_todays_cards(dummy_service, freezer, date, expected):
     # assuming a ff.start_date of 2019-12-31 (and in the sheet)
@@ -169,10 +166,8 @@ def test_update_bucket(card, success, expected, freezer, dummy_service):
 def test_add_term(dummy_service):
     ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
     ff.add_term(
-        front="What should horses in training wear in the stable?",
-        back="A Blanket",
+        front="What should horses in training wear in the stable?", back="A Blanket",
     )
-
 
     assert ff.get_terms().values[-1].tolist() == [
         "What should horses in training wear in the stable?",
