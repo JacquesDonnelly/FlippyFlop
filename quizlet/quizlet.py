@@ -62,10 +62,11 @@ def write_json(parsed_pdf, write_path):
 
 
 if __name__ == "__main__":
-    set_id = 513457065
+    set_id = 511546371
     download_pdf(set_id)
     read_path = f"./downloads/{set_id}.pdf"
     write_path = f"./downloads/{set_id}.json"
     pdf = open_pdf(read_path)
     parsed_pdf = parse_pdf(pdf)
     write_json(parsed_pdf, write_path)
+    # pd.DataFrame((card["a"], card["b"]) for card in parsed_pdf.values()).to_csv("dump.csv")
