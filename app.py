@@ -23,7 +23,7 @@ ff = FlippyFlop(service=service, spreadsheet_id=spreadsheet_id, throttle_time=0)
 
 # TODO: refactor. Sending the post on the card should not block loading of next card.
 # Use async/generator/coroutine to handle sequence of cards and post requests
-# It's just a mess in general... 
+# It's just a mess in general...
 
 REMAINING = None
 TERMS = None
@@ -56,8 +56,8 @@ def single_card(card_id):
         return render_template(
             "card.html",
             remaining_cards=len(REMAINING),
-            card_front=term["front"].replace('\n', '<br>'),
-            card_back=term["back"].replace('\n', '<br>'),
+            card_front=term["front"].replace("\n", "<br>"),
+            card_back=term["back"].replace("\n", "<br>"),
         )
     if request.method == "POST":
         success = request.form["action"] == "success"

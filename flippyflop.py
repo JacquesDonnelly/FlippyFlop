@@ -7,7 +7,6 @@ import time
 import pandas as pd
 
 # TODO: What happens if a card is deleted?
-# TODO: check requirements are all there...
 
 
 class FlippyFlop:

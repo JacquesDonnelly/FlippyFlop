@@ -81,7 +81,6 @@ def test_get_buckets(dummy_service):
     ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
     result = ff.get_buckets()
 
-
     assert result.values.tolist() == [
         ["1", "1577865600"],
         ["2", "1577865660"],
@@ -119,7 +118,6 @@ def test_todays_cards(dummy_service, freezer, date, expected):
         result = ff.todays_cards()
 
         assert result == expected
-        
 
 
 @freeze_time("2020-01-02 08:34:26", tick=True)
