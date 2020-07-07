@@ -131,3 +131,6 @@ dmypy.json
 # Google Sheets Auth files
 credentials.json
 token.pickle
+
+# MacOS
+.DS_Store
