@@ -17,7 +17,7 @@ with open(credential_path, "rb") as token:
     creds = pickle.load(token)
 
 service = build("sheets", "v4", credentials=creds)
-spreadsheet_id = "1UDLGeqhVxfHJF5zk2EWRnWuQrZLQkCbwdg9loyd1nFg"
+spreadsheet_id = "1eZL2eOCFKxGkg7bYaEmp-urWqWBfUNx73n_1oR2RkpM"
 
 ff = FlippyFlop(service=service, spreadsheet_id=spreadsheet_id, throttle_time=0)
 
