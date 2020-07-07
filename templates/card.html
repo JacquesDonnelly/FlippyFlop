@@ -104,12 +104,12 @@ h3 {
     <div class="flip-card-inner">
       <div class="flip-card-front">
         <div class="card-content">
-	<h2>{{ card_front }}</h2> 
+	<h2>{% autoescape false %} {{ card_front }}  {% endautoescape %}</h2>
         </div>
       </div>
       <div class="flip-card-back">
         <div class="card-content">
-	<b>{{ card_back }}</b>
+	<b>{% autoescape false %} {{ card_back }}  {% endautoescape %}</b>
       </div>
       </div>
     </div>

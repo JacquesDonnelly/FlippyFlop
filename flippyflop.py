@@ -1,46 +1,60 @@
-import pandas as pd
+"""Card selection logic and read/write to google sheets"""
+
+from typing import List
 import datetime
 import time
 
+import pandas as pd
 
 # TODO: What happens if a card is deleted?
-# TODO: Use type hinting
-# TODO: Add docstrings and lint
+# TODO: check requirements are all there...
+
 
 class FlippyFlop:
-    def __init__(self, service, spreadsheet_id, throttle_time=1, day_zero=datetime.datetime(2019, 12, 31)):
+    def __init__(
+        self,
+        service,
+        spreadsheet_id,
+        throttle_time=1,
+        day_zero=datetime.datetime(2019, 12, 31),
+    ):
+        """Handle reading and writing to google sheets and daily card logic"""
         self.service = service
         self.spreadsheet_id = spreadsheet_id
         # TODO: get schedule from the schedule tab
         self.schedule = [(1, 1), (2, 2), (3, 3), (5, 4), (9, 5)]
         self.day_zero = day_zero
         self.time_of_last_hit = time.time()
-        self.throttle_time = throttle_time 
+        self.throttle_time = throttle_time
 
     def throttle(func):
+        """ensure api requests are at least `throttle_time` apart"""
+
+        # TODO: Should this be defined outside of class? E0213 & E1102 from pylint
         def inner(self, *args, **kwargs):
             time_since = time.time() - self.time_of_last_hit
             if abs(time_since) > self.throttle_time:
                 _result = func(self, *args, **kwargs)
                 self.time_of_last_hit = time.time()
-                print(f"hitting sheets via {func.__name__} with args {args} and kwargs {kwargs}")
+                print(
+                    f"hitting sheets via {func.__name__} with args {args} and kwargs {kwargs}"
+                )
             else:
                 time.sleep(0.1)
                 _result = inner(self, *args, **kwargs)
-    
+
             return _result
 
         return inner
 
-
-    def get_terms(self):
+    def get_terms(self) -> pd.DataFrame:
         """All terms in the terms tab"""
         values = self._get_values(tab="terms", cell_range="A:C")
         terms_df = pd.DataFrame(values[1:], columns=values[0])
         return terms_df.set_index("card_id")
 
-    def get_buckets(self):
-        """most recent bucket according to bucket tab"""
+    def get_buckets(self) -> pd.DataFrame:
+        """Current bucket of each term"""
         values = self._get_values(tab="buckets", cell_range="A:C")
         bucket_df = pd.DataFrame(values[1:], columns=values[0])
         return (
@@ -49,7 +63,7 @@ class FlippyFlop:
             .last()
         )
 
-    def todays_cards(self):
+    def todays_cards(self) -> List[str]:
         """get ids of cards left to do today"""
         terms = self.get_terms()
         buckets = self.get_buckets()
@@ -60,13 +74,11 @@ class FlippyFlop:
         not_seen_today = terms["timestamp_tested"] < earliest_today
         not_in_bucket_yet = terms["bucket_after_test"].isna()
 
-        return terms[
-            (is_in_today & not_seen_today) | not_in_bucket_yet
-        ].index.tolist()
+        return terms[(is_in_today & not_seen_today) | not_in_bucket_yet].index.tolist()
 
     @throttle
-    def update_bucket(self, card_id, success):
-        """add new row to buckets tab"""
+    def update_bucket(self, card_id: str, success: bool) -> None:
+        """add new row to buckets tab indicating completion of card"""
         old_buckets = self.get_buckets()
         if card_id in old_buckets.index:
             old_bucket = int(old_buckets.loc[card_id]["bucket_after_test"])
@@ -96,9 +108,13 @@ class FlippyFlop:
         )
 
     @throttle
-    def add_term(self, front, back):
+    def add_term(self, front: str, back: str) -> None:
+        """add new flash card to terms tab of google sheets
+
+        by default the id column is just incremented by 1
+        """
         largest_card = int(self.get_terms().index.max())
-        # TODO: refactor repeated chunk of code below.
+        # TODO: refactor repeated chunk of code.
         # A single execute method to avoid need for throttle decorator
         value_range_body = {
             "values": [[largest_card + 1], [front], [back]],
@@ -117,24 +133,21 @@ class FlippyFlop:
             .execute()
         )
 
-    def _todays_buckets(self):
+    def _todays_buckets(self) -> List[str]:
+        """retreive what buckets we should be reviewing today"""
         buckets = []
         for period, box in self.schedule:
-            if (
-                datetime.datetime.utcnow() - self.day_zero
-            ).days % period == 0:
+            if (datetime.datetime.utcnow() - self.day_zero).days % period == 0:
                 buckets.append(str(box))
         return buckets
 
     @throttle
-    def _get_values(self, tab, cell_range):
+    def _get_values(self, tab: str, cell_range: str) -> List[List[str]]:
+        """generic read cell range from google sheet tab"""
         sheet = self.service.spreadsheets()
         result = (
             sheet.values()
-            .get(
-                spreadsheetId=self.spreadsheet_id, range=f"{tab}!{cell_range}"
-            )
+            .get(spreadsheetId=self.spreadsheet_id, range=f"{tab}!{cell_range}")
             .execute()
         )
         return result["values"]
-

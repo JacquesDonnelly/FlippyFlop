@@ -71,6 +71,7 @@ def dummy_service():
 def test_get_terms(dummy_service):
     ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
     result = ff.get_terms()
+
     assert result.shape == (3, 2)
     assert result.iloc[0]["back"] == "Paris"
     assert result.iloc[2]["front"] == "How many legs does a horse have?"
@@ -79,6 +80,7 @@ def test_get_terms(dummy_service):
 def test_get_buckets(dummy_service):
     ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
     result = ff.get_buckets()
+
 
     assert result.values.tolist() == [
         ["1", "1577865600"],
@@ -117,6 +119,7 @@ def test_todays_cards(dummy_service, freezer, date, expected):
         result = ff.todays_cards()
 
         assert result == expected
+        
 
 
 @freeze_time("2020-01-02 08:34:26", tick=True)
@@ -173,6 +176,11 @@ def test_add_term(dummy_service):
 
 
 def test_functional(dummy_service, freezer):
+    """a functional test where cards are tested on sequential days
+
+    We assert that the cards are placed into the correct bucket each day
+    as well as we are testing the correct cards on each day
+    """
     ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
 
     first_test_date = datetime.datetime(2020, 1, 2, 8)
