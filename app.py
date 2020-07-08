@@ -9,7 +9,7 @@ from flask_login import LoginManager, current_user, login_user
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from googleapiclient.discovery import build
-# TODO: Add flask-login and flask-sqlalchemy reqs
+# TODO BNPR: Add flask-login and flask-sqlalchemy reqs
 
 
 from flippyflop import FlippyFlop
@@ -27,14 +27,14 @@ login = LoginManager(app)
 
 
 import models
-# TODO: Use an init / application factory like miguel
+# TODO: Use an init / app factory + routes like miguel
 # Import here is required to import the models for Alembic (flask-migrate)
 
 # TODO: Create a config file for the whole app
 # TODO: Make file structure of app nice
 
 
-# TODO: Containerize
+# TODO BNPR: Containerize
 
 
 
@@ -55,12 +55,12 @@ def login():
     return render_template('login.html', title='Sign In', form=form)
 
 
-# TODO: Implement flask-login and login form 
+# TODO BNPR: Implement flask-login and login form 
 # - Only Ellie has a user
 # - Everything is blocked unless she's logged in
 # - Every page redirects to the login page
 
-# TODO: make sure username is case insensitive
+# TODO BNPR: make sure username is case insensitive
 # The username in the db currently is 'Ellie' not 'ellie'
 
 credential_path = "./token.pickle"
@@ -70,6 +70,7 @@ with open(credential_path, "rb") as token:
 service = build("sheets", "v4", credentials=creds)
 spreadsheet_id = "1eZL2eOCFKxGkg7bYaEmp-urWqWBfUNx73n_1oR2RkpM"
 
+# TODO: Set the day zero as 07/07/20
 ff = FlippyFlop(service=service, spreadsheet_id=spreadsheet_id, throttle_time=0)
 
 # TODO: refactor. Sending the post on the card should not block loading of next card.
