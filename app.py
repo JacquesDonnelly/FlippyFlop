@@ -1,5 +1,6 @@
 """Front end for viewing and testing a sequence of cards"""
 
+import datetime
 import os
 import pickle
 import random
@@ -9,6 +10,7 @@ from flask_login import LoginManager, current_user, login_user
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from googleapiclient.discovery import build
+
 # TODO BNPR: Add flask-login and flask-sqlalchemy reqs
 
 
@@ -18,15 +20,16 @@ from forms import LoginForm
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'a_really_big_secret'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.db')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config["SECRET_KEY"] = "a_really_big_secret"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + os.path.join(basedir, "app.db")
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
 
 
 import models
+
 # TODO: Use an init / app factory + routes like miguel
 # Import here is required to import the models for Alembic (flask-migrate)
 
@@ -37,25 +40,24 @@ import models
 # TODO BNPR: Containerize
 
 
-
-@app.route('/login', methods=['GET', 'POST'])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
     if current_user.is_authenticated:
-        return redirect(url_for('home'))
+        return redirect(url_for("home"))
     form = LoginForm()
     if form.validate_on_submit():
         user = models.User.query.filter_by(username=form.username.data).first()
         print(form.username.data)
         if user is None or not user.check_password(form.password.data):
-            flash('Invalid username or password')
-            return redirect(url_for('login'))
+            flash("Invalid username or password")
+            return redirect(url_for("login"))
         login_user(user, remember=form.remember_me.data)
-        return redirect(url_for('home'))
-    return render_template('login.html', title='Sign In', form=form)
+        return redirect(url_for("home"))
+    return render_template("login.html", title="Sign In", form=form)
 
 
-# TODO BNPR: Implement flask-login and login form 
+# TODO BNPR: Implement flask-login and login form
 # - Only Ellie has a user
 # - Everything is blocked unless she's logged in
 # - Every page redirects to the login page
@@ -70,8 +72,12 @@ with open(credential_path, "rb") as token:
 service = build("sheets", "v4", credentials=creds)
 spreadsheet_id = "1eZL2eOCFKxGkg7bYaEmp-urWqWBfUNx73n_1oR2RkpM"
 
-# TODO: Set the day zero as 07/07/20
-ff = FlippyFlop(service=service, spreadsheet_id=spreadsheet_id, throttle_time=0)
+ff = FlippyFlop(
+    service=service,
+    spreadsheet_id=spreadsheet_id,
+    day_zero=datetime.datetime(2020, 7, 7),
+    throttle_time=0,
+)
 
 # TODO: refactor. Sending the post on the card should not block loading of next card.
 # Use async/generator/coroutine to handle sequence of cards and post requests
@@ -90,7 +96,6 @@ def home():
     if request.method == "GET":
         REMAINING = ff.todays_cards()
         TERMS = ff.get_terms()
-        print(TERMS)
         return render_template("home.html", remaining=len(REMAINING))
     if request.method == "POST":
         if request.form["action"] == "start":
