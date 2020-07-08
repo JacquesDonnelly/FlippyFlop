@@ -1,16 +1,67 @@
 """Front end for viewing and testing a sequence of cards"""
 
+import os
 import pickle
 import random
 
-from flask import Flask, request, redirect
-from flask import render_template
+from flask import Flask, request, redirect, url_for, render_template, flash
+from flask_login import LoginManager, current_user, login_user
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 from googleapiclient.discovery import build
+# TODO: Add flask-login and flask-sqlalchemy reqs
+
 
 from flippyflop import FlippyFlop
+from forms import LoginForm
+
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'a_really_big_secret'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'app.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
+login = LoginManager(app)
 
+
+import models
+# TODO: Use an init / application factory like miguel
+# Import here is required to import the models for Alembic (flask-migrate)
+
+# TODO: Create a config file for the whole app
+# TODO: Make file structure of app nice
+
+
+# TODO: Containerize
+
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if current_user.is_authenticated:
+        return redirect(url_for('home'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = models.User.query.filter_by(username=form.username.data).first()
+        print(form.username.data)
+        if user is None or not user.check_password(form.password.data):
+            flash('Invalid username or password')
+            return redirect(url_for('login'))
+        login_user(user, remember=form.remember_me.data)
+        return redirect(url_for('home'))
+    return render_template('login.html', title='Sign In', form=form)
+
+
+# TODO: Implement flask-login and login form 
+# - Only Ellie has a user
+# - Everything is blocked unless she's logged in
+# - Every page redirects to the login page
+
+# TODO: make sure username is case insensitive
+# The username in the db currently is 'Ellie' not 'ellie'
 
 credential_path = "./token.pickle"
 with open(credential_path, "rb") as token:
@@ -25,8 +76,8 @@ ff = FlippyFlop(service=service, spreadsheet_id=spreadsheet_id, throttle_time=0)
 # Use async/generator/coroutine to handle sequence of cards and post requests
 # It's just a mess in general...
 
-REMAINING = None
-TERMS = None
+REMAINING = ff.todays_cards()
+TERMS = ff.get_terms()
 
 
 @app.route("/", methods=["GET", "POST"])
