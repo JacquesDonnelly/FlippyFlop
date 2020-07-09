@@ -6,12 +6,11 @@ import pickle
 import random
 
 from flask import Flask, request, redirect, url_for, render_template, flash
-from flask_login import LoginManager, current_user, login_user
+from flask_login import LoginManager, current_user, login_user, login_required
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from googleapiclient.discovery import build
-
-# TODO BNPR: Add flask-login and flask-sqlalchemy reqs
+from sqlalchemy import func
 
 
 from flippyflop import FlippyFlop
@@ -26,7 +25,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
-
+login.login_view = "login"
 
 import models
 
@@ -47,23 +46,15 @@ def login():
         return redirect(url_for("home"))
     form = LoginForm()
     if form.validate_on_submit():
-        user = models.User.query.filter_by(username=form.username.data).first()
-        print(form.username.data)
+        user = models.User.query.filter(
+            func.lower(models.User.username) == func.lower(form.username.data)
+        ).first()
         if user is None or not user.check_password(form.password.data):
             flash("Invalid username or password")
             return redirect(url_for("login"))
         login_user(user, remember=form.remember_me.data)
         return redirect(url_for("home"))
     return render_template("login.html", title="Sign In", form=form)
-
-
-# TODO BNPR: Implement flask-login and login form
-# - Only Ellie has a user
-# - Everything is blocked unless she's logged in
-# - Every page redirects to the login page
-
-# TODO BNPR: make sure username is case insensitive
-# The username in the db currently is 'Ellie' not 'ellie'
 
 credential_path = "./token.pickle"
 with open(credential_path, "rb") as token:
@@ -88,6 +79,7 @@ TERMS = ff.get_terms()
 
 
 @app.route("/", methods=["GET", "POST"])
+@login_required
 def home():
     """view before/after reviewing cards"""
     global TERMS
@@ -104,6 +96,7 @@ def home():
 
 
 @app.route("/<card_id>", methods=["GET", "POST"])
+@login_required
 def single_card(card_id):
     """view of single card with correct/incorrect buttons"""
     global TERMS

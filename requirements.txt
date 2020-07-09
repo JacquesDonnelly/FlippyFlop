@@ -5,3 +5,8 @@ google-auth-oauthlib
 pytest
 pytest-freezegun
 flask
+flask-migrate
+flask-sqlalchemy
+flask-login
+flask-wtf
+
