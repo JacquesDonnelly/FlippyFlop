@@ -66,9 +66,11 @@ ff = FlippyFlop(
     throttle_time=0,
 )
 
-# TODO: refactor. Sending the post on the card should not block loading of next card.
-# Use async/generator/coroutine to handle sequence of cards and post requests
-# It's just a mess in general...
+# TODO: refactor / and /<card_id> to be more supportive of multiple users
+# Use daemon thread to execute the ff.update_bucket request 
+# Use cookies to store cards still to do today
+# Only hit ff.get_terms once on / route, then store in db rather than global
+
 
 REMAINING = ff.todays_cards()
 TERMS = ff.get_terms()
