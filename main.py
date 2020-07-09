@@ -35,10 +35,6 @@ import models
 # TODO: Create a config file for the whole app
 # TODO: Make file structure of app nice
 
-
-# TODO BNPR: Containerize
-
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     form = LoginForm()
