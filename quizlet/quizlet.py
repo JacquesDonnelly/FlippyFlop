@@ -3,6 +3,7 @@ import pdftotext
 import re
 import json
 from collections import defaultdict
+import pandas as pd
 
 
 def download_pdf(set_id, destination_dir="./downloads"):
@@ -20,7 +21,6 @@ def download_pdf(set_id, destination_dir="./downloads"):
         "&settings=paper%3Dindex%26type%3Dflash%2"
         "6duplex%3D0%26flip%3D0%26selectedOnly"
         "%3D0%26showImages%3D1%26size%3Dindex%26engine%3Dchrome_devtools"
-        "&version=-9999"
     )
     print(url)
     response = requests.get(url, headers=headers)
@@ -46,7 +46,9 @@ def parse_pdf(pdf):
         card = page.replace("\n", " ")
         card = re.sub("\s{2,}", " ", card).strip()
         suffix = f"{int(page_number)}{side_mapping[side]}"
-        groups = re.search(f"(.*) ({suffix})$", card)
+        groups = re.search(f"(.*)({suffix}).*", card)
+        print(suffix)
+        print(card)
         output[int(page_number)][side_mapping[side]] = groups.group(1)
         page_number += 0.5
         side = (side + 1) % 2
@@ -62,11 +64,12 @@ def write_json(parsed_pdf, write_path):
 
 
 if __name__ == "__main__":
-    set_id = 511546371
+    set_id = 511657019
     download_pdf(set_id)
     read_path = f"./downloads/{set_id}.pdf"
     write_path = f"./downloads/{set_id}.json"
     pdf = open_pdf(read_path)
+
     parsed_pdf = parse_pdf(pdf)
     write_json(parsed_pdf, write_path)
-    # pd.DataFrame((card["a"], card["b"]) for card in parsed_pdf.values()).to_csv("dump.csv")
+    pd.DataFrame((card["a"], card["b"]) for card in parsed_pdf.values()).to_csv("./downloads/dump.csv")
