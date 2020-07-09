@@ -70,21 +70,24 @@ ff = FlippyFlop(
 # Use async/generator/coroutine to handle sequence of cards and post requests
 # It's just a mess in general...
 
-app.config["REMAINING"] = ff.todays_cards()
-app.config["TERMS"] = ff.get_terms()
+REMAINING = ff.todays_cards()
+TERMS = ff.get_terms()
+
 
 @app.route("/", methods=["GET", "POST"])
 @login_required
 def home():
     """view before/after reviewing cards"""
+    global TERMS
+    global REMAINING
     # TODO: todays_cards queries the terms tab. This happens again in get_terms.
     if request.method == "GET":
-        app.config["REMAINING"] = ff.todays_cards()
-        app.config["TERMS"] = ff.get_terms()
-        return render_template("home.html", remaining=len(app.config["REMAINING"]))
+        REMAINING = ff.todays_cards()
+        TERMS = ff.get_terms()
+        return render_template("home.html", remaining=len(REMAINING))
     if request.method == "POST":
         if request.form["action"] == "start":
-            next_card = random.choice(app.config["REMAINING"])
+            next_card = random.choice(REMAINING)
             return redirect(f"/{next_card}")
 
 
@@ -92,20 +95,22 @@ def home():
 @login_required
 def single_card(card_id):
     """view of single card with correct/incorrect buttons"""
+    global TERMS
+    global REMAINING
     if request.method == "GET":
-        term = app.config["TERMS"].loc[card_id]
+        term = TERMS.loc[card_id]
         return render_template(
             "card.html",
-            remaining_cards=len(app.config['REMAINING']),
+            remaining_cards=len(REMAINING),
             card_front=term["front"].replace("\n", "<br>"),
             card_back=term["back"].replace("\n", "<br>"),
         )
     if request.method == "POST":
         success = request.form["action"] == "success"
         ff.update_bucket(card_id, success)
-        app.config["REMAINING"].remove(card_id)
-        if app.config["REMAINING"]:
-            next_card = random.choice(app.config["REMAINING"])
+        REMAINING.remove(card_id)
+        if REMAINING:
+            next_card = random.choice(REMAINING)
             return redirect(f"/{next_card}")
         else:
             return redirect("/")
