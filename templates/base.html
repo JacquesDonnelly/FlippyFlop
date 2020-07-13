@@ -1,26 +1,40 @@
-<html>
-    <head>
-	<link rel="icon" href="data:,">
-        {% if title %}
-        <title>{{ title }} - microblog</title>
-        {% else %}
-        <title>microblog</title>
-        {% endif %}
-    </head>
-    <body>
-        <div>
-            FlippyFlop
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Flippy Flop Sign In">
+    <meta name="author" content="Jacques Donnelly">
+    <link rel="icon" href="./favicon.ico">
+
+    <title>FlippyFlop</title>
+    <!-- Bootstrap core CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/style.css" rel="stylesheet">
+  </head>
+
+  <body class="text-center">
+
+    <div class="cover-container d-flex h-100 w-100 p-3 flex-column">
+      <header class="masthead mb-auto">
+        <div class="inner">
+          <h3 class="masthead-brand">FlippyFlop</h3>
+          <nav class="nav nav-masthead justify-content-center">
+            <a class="nav-link active" href="#">Home</a>
+            <a class="nav-link" href="#">Cards</a>
+            <a class="nav-link" href="#">Stats</a>
+            <a class="nav-link" href="#">Settings</a>
+          </nav>
         </div>
-        <hr>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <ul>
-            {% for message in messages %}
-            <li>{{ message }}</li>
-            {% endfor %}
-        </ul>
-        {% endif %}
-        {% endwith %}
-        {% block content %}{% endblock %}
-    </body>
-</html>
+      </header>
+
+     {% block content %}{% endblock %}
+
+      <footer class="mastfoot mt-auto">
+        <div class="inner">
+                <p>Flippy Flop is a Flash Card Tool Implementing the <a href="https://en.wikipedia.org/wiki/Leitner_system">Leitner System</a></p>
+        </div>
+      </footer>
+    </div>
+</body></html>

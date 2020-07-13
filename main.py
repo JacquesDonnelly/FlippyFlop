@@ -35,22 +35,23 @@ import models
 # TODO: Create a config file for the whole app
 # TODO: Make file structure of app nice
 
+
+# TODO BNPR: Remove old wtfform stuff
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    form = LoginForm()
     if current_user.is_authenticated:
         return redirect(url_for("home"))
-    form = LoginForm()
-    if form.validate_on_submit():
+    if request.method == "POST": 
         user = models.User.query.filter(
-            func.lower(models.User.username) == func.lower(form.username.data)
+            func.lower(models.User.username) == func.lower(request.form.get("username"))
         ).first()
-        if user is None or not user.check_password(form.password.data):
+        if user is None or not user.check_password(request.form.get("password")):
             flash("Invalid username or password")
             return redirect(url_for("login"))
-        login_user(user, remember=form.remember_me.data)
+        login_user(user, remember=False)
         return redirect(url_for("home"))
-    return render_template("login.html", title="Sign In", form=form)
+    return render_template("login.html", title="Sign In")
 
 credential_path = "./token.pickle"
 with open(credential_path, "rb") as token:
