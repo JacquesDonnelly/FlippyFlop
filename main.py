@@ -37,6 +37,7 @@ import models
 
 
 # TODO BNPR: Remove old wtfform stuff
+# TODO BNPR: Get the flash working to pop up a failed username/pass error message
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
