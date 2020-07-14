@@ -74,9 +74,18 @@ ff = FlippyFlop(
 # Only hit ff.get_terms once on / route, then store in db rather than global
 
 
+# TODO: Fix Accidental Double Clicking Behaviour
+
 REMAINING = ff.todays_cards()
 TERMS = ff.get_terms()
 
+# TODO: BNPR 1 card, 2 cards in remaining please
+
+# TODO: BNPR Get header links working
+
+# TODO: BNPR Get the footer saying remaining and being inspirational
+
+# TODO: Use url_for everywhere
 
 @app.route("/", methods=["GET", "POST"])
 @login_required
@@ -106,8 +115,8 @@ def single_card(card_id):
         return render_template(
             "card.html",
             remaining_cards=len(REMAINING),
-            card_front=term["front"].replace("\n", "<br>"),
-            card_back=term["back"].replace("\n", "<br>"),
+            front=term["front"].replace("\n", "<br>"),
+            back=term["back"].replace("\n", "<br>"),
         )
     if request.method == "POST":
         success = request.form["action"] == "success"

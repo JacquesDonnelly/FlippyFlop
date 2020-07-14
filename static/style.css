@@ -91,6 +91,10 @@ body {
  * Cover
  */
 
+.start-btn {
+  margin-top: 30px;
+}
+
 .form-signin {
   width: 100%;
   max-width: 400px;
@@ -105,6 +109,99 @@ body {
 .cover .btn-lg {
   padding: .75rem 1.25rem;
   font-weight: 700;
+}
+
+.flipCard {
+  -webkit-perspective: 800;
+  -ms-perspective: 800;
+  -moz-perspective: 800;
+  -o-perspective: 800;
+   width: 90%;
+   max-width: 700px;
+   height: 300px;
+   position: relative;
+   margin: auto;
+   margin-top: 0px;
+}
+.flipCard .flippything.flipped {
+  transform:rotatey(-180deg);
+  -ms-transform:rotatey(-180deg); /* IE 9 */
+  -moz-transform:rotatey(-180deg); /* Firefox */
+  -webkit-transform:rotatey(-180deg); /* Safari and Chrome */
+  -o-transform:rotatey(-180deg); /* Opera */
+}
+.flipCard .flippything {
+  width: 100%;
+  height: 100%;
+  margin-bottom: 10px;
+  -webkit-transform-style: preserve-3d;
+  -webkit-transition: 0.5s;
+  -moz-transform-style: preserve-3d;
+  -moz-transition: 0.5s;
+  -ms-transform-style: preserve-3d;
+  -ms-transition: 0.5s;
+  -o-transform-style: preserve-3d;
+  -o-transition: 0.5s;
+  transform-style: preserve-3d;
+  transition: 0.5s;
+}
+.flipCard .flippything .side {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  cursor: pointer;
+  position: absolute;
+  box-sizing: border-box;
+  z-index: 2;
+  backface-visibility: hidden;  /* W3C */
+  -webkit-backface-visibility: hidden; /* Safari & Chrome */
+  -moz-backface-visibility: hidden; /* Firefox */
+  -ms-backface-visibility: hidden; /* Internet Explorer */
+  -o-backface-visibility: hidden; /* Opera */
+  box-shadow: 0 0 10px rgba(0,0,0,0.6);
+  overflow: auto;
+}
+.flipCard .flippything .back {
+  color: black;
+  transform:rotatey(-180deg);
+  -ms-transform:rotatey(-180deg); /* IE 9 */
+  -moz-transform:rotatey(-180deg); /* Firefox */
+  -webkit-transform:rotatey(-180deg); /* Safari and Chrome */
+  -o-transform:rotatey(-180deg); /* Opera */
+}
+
+.flipCard .flippything .front {
+  font-family: Georgia;
+  font-size: 1em;
+  text-align: center;
+  background-color: rgba(255, 255, 255, .25);
+  border: 3px solid white;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+.flipCard .flippything .back {
+  background-color: rgba(255, 255, 255, 0.25);
+  border: 3px solid white;
+  text-align: center;
+  color: white;
+  text-align: center;
+  font-family: Georgia;
+  font-size: 1em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+   width: 90%;
+   max-width: 700px;
+}
+
+.correct {
+  margin-top: 10px
 }
 
 
