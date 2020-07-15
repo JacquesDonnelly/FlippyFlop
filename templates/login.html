@@ -9,7 +9,7 @@
 
 {% with messages=get_flashed_messages() %}
 	{% if 'failed_login' in messages %}
-    <div class="alert alert-danger" role="alert"> Incorrect Username or Password</div>
+	<div class="alert alert-danger" role="alert"> {{ insult }}</div>
 	{% endif %}
 {% endwith %}
    

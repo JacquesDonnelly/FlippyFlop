@@ -12,7 +12,7 @@ from flask_sqlalchemy import SQLAlchemy
 from googleapiclient.discovery import build
 from sqlalchemy import func
 
-
+from insults import insult_generator
 from flippyflop import FlippyFlop
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -34,8 +34,6 @@ import models
 # TODO: Create a config file for the whole app
 # TODO: Make file structure of app nice
 
-# TODO BNPR: Create Insult Generator using
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
@@ -49,7 +47,7 @@ def login():
             return redirect(url_for("login"))
         login_user(user, remember=False)
         return redirect(url_for("home"))
-    return render_template("login.html", title="Sign In")
+    return render_template("login.html", title="Sign In", insult=insult_generator.generate())
 
 credential_path = "./token.pickle"
 with open(credential_path, "rb") as token:
