@@ -34,9 +34,7 @@ import models
 # TODO: Create a config file for the whole app
 # TODO: Make file structure of app nice
 
-
-# TODO BNPR: Remove old wtfform stuff
-# TODO BNPR: Get the flash working to pop up a failed username/pass error message
+# TODO BNPR: Create Insult Generator using
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -47,7 +45,7 @@ def login():
             func.lower(models.User.username) == func.lower(request.form.get("username"))
         ).first()
         if user is None or not user.check_password(request.form.get("password")):
-            flash("Invalid username or password")
+            flash("failed_login")
             return redirect(url_for("login"))
         login_user(user, remember=False)
         return redirect(url_for("home"))

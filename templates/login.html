@@ -2,8 +2,17 @@
 
 {% block content %}
 
+
+
     <div class="d-flex justify-content-center forn-signin-container">
     <form class="form-signin" action="/login" method="POST">
+
+{% with messages=get_flashed_messages() %}
+	{% if 'failed_login' in messages %}
+    <div class="alert alert-danger" role="alert"> Incorrect Username or Password</div>
+	{% endif %}
+{% endwith %}
+   
       <label for="username" class="sr-only">Username</label>
       <input name="username" type="text" id="username" class="form-control" placeholder="Username" autofocus>
       <label for="password" class="sr-only">Password</label>
