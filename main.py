@@ -14,7 +14,6 @@ from sqlalchemy import func
 
 
 from flippyflop import FlippyFlop
-from forms import LoginForm
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
