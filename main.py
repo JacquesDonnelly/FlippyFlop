@@ -74,13 +74,19 @@ ff = FlippyFlop(
 REMAINING = ff.todays_cards()
 TERMS = ff.get_terms()
 
-# TODO: BNPR 1 card, 2 cards in remaining please
-
-# TODO: BNPR Get header links working
-
-# TODO: BNPR Get the footer saying remaining and being inspirational
+# TODO: Add coming soon to each button
 
 # TODO: Use url_for everywhere
+
+
+def generate_remaining_cards_phrase(num_remaining_cards):
+    single_card = num_remaining_cards == 1
+    if single_card:
+        noun = "Card"
+    else:
+        noun = "Cards"
+    return f"{num_remaining_cards} {noun} Remaining"
+
 
 @app.route("/", methods=["GET", "POST"])
 @login_required
@@ -92,7 +98,8 @@ def home():
     if request.method == "GET":
         REMAINING = ff.todays_cards()
         TERMS = ff.get_terms()
-        return render_template("home.html", remaining=len(REMAINING))
+        phrase = generate_remaining_cards_phrase(len(REMAINING))
+        return render_template("home.html", remaining_cards_phrase=phrase, remaining=len(REMAINING), footer=" ")
     if request.method == "POST":
         if request.form["action"] == "start":
             next_card = random.choice(REMAINING)
@@ -109,9 +116,9 @@ def single_card(card_id):
         term = TERMS.loc[card_id]
         return render_template(
             "card.html",
-            remaining_cards=len(REMAINING),
             front=term["front"].replace("\n", "<br>"),
             back=term["back"].replace("\n", "<br>"),
+            footer=generate_remaining_cards_phrase(len(REMAINING))
         )
     if request.method == "POST":
         success = request.form["action"] == "success"

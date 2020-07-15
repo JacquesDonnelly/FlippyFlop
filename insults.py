@@ -1,5 +1,3 @@
-# TODO BNPR: Add some inspirational stuff
-
 import random
 
 class InsultGenerator:

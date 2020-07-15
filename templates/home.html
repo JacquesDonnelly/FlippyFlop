@@ -3,7 +3,7 @@
 {% block content %}
 {% if remaining %}
 
-<h1>You have {{ remaining }} cards left to do today, good luck!</h1>
+<h1>You have {{ remaining_cards_phrase | lower }} today, good luck!</h1>
 
 <form method="post">
   <button class="btn btn-light btn-lg start-btn" type="submit" name="action" value="start">Start!</button>
