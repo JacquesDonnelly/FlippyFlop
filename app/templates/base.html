@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Flippy Flop Sign In">
+    <meta name="author" content="Jacques Donnelly">
+    <link rel="icon" href="static/favicon.ico">
+
+    <title>FlippyFlop</title>
+    <!-- Bootstrap core CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="/static/style.css" rel="stylesheet">
+  </head>
+
+  <body class="text-center">
+
+    <div class="cover-container d-flex h-100 w-100 p-3 flex-column">
+      <header class="masthead mb-auto">
+        <div class="inner">
+	<h3 class="masthead-brand"><a href="{{ url_for('home') }}">FlippyFlop</a></h3>
+          <nav class="nav nav-masthead justify-content-center">
+		  <a class="nav-link {{ header_link_state.review }}" href="{{ url_for('home') }}">Review</a>
+	    <a class="nav-link {{ header_link_state.cards }}" href="{{ url_for('cards') }}">Cards</a>
+	    <a class="nav-link {{ header_link_state.stats }}" href="{{ url_for('stats') }}">Stats</a>
+	    <a class="nav-link {{ header_link_state.settings }}" href="{{ url_for('settings') }}">Settings</a>
+          </nav>
+        </div>
+      </header>
+
+     {% block content %}{% endblock %}
+
+      <footer class="mastfoot mt-auto">
+        <div class="inner">
+		{% if footer %}
+		<p>{{ footer }}</p>
+		{% else %}
+                <p>Flippy Flop is a Flash Card Tool Implementing the <a href="https://en.wikipedia.org/wiki/Leitner_system">Leitner System</a></p>
+		{% endif %}
+        </div>
+      </footer>
+    </div>
+</body></html>

@@ -64,7 +64,7 @@ def write_json(parsed_pdf, write_path):
 
 
 if __name__ == "__main__":
-    set_id = 511657019
+    set_id = 513634425
     download_pdf(set_id)
     read_path = f"./downloads/{set_id}.pdf"
     write_path = f"./downloads/{set_id}.json"
