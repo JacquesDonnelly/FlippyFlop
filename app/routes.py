@@ -22,6 +22,7 @@ from app.service import ff, REMAINING, TERMS
 
 # TODO: Use url_for everywhere
 
+
 def generate_remaining_cards_phrase(num_remaining_cards):
     single_card = num_remaining_cards == 1
     if single_card:
@@ -70,7 +71,7 @@ def home():
             remaining_cards_phrase=phrase,
             remaining=len(REMAINING),
             footer=" ",
-            header_link_state=header_link_state
+            header_link_state=header_link_state,
         )
     if request.method == "POST":
         if request.form["action"] == "start":
@@ -92,7 +93,7 @@ def single_card(card_id):
             front=term["front"].replace("\n", "<br>"),
             back=term["back"].replace("\n", "<br>"),
             footer=generate_remaining_cards_phrase(len(REMAINING)),
-            header_link_state=header_link_state
+            header_link_state=header_link_state,
         )
     if request.method == "POST":
         success = request.form["action"] == "success"
@@ -109,20 +110,24 @@ def single_card(card_id):
 @login_required
 def cards():
     header_link_state = HeaderLinkState(page="cards")
-    return render_template("coming_soon.html", header_link_state=header_link_state, footer=" ")
+    return render_template(
+        "coming_soon.html", header_link_state=header_link_state, footer=" "
+    )
 
 
 @app.route("/stats")
 @login_required
 def stats():
     header_link_state = HeaderLinkState(page="stats")
-    return render_template("coming_soon.html", header_link_state=header_link_state, footer=" ")
+    return render_template(
+        "coming_soon.html", header_link_state=header_link_state, footer=" "
+    )
 
 
 @app.route("/settings")
 @login_required
 def settings():
     header_link_state = HeaderLinkState(page="settings")
-    return render_template("coming_soon.html",  header_link_state=header_link_state, footer=" ")
-
-
+    return render_template(
+        "coming_soon.html", header_link_state=header_link_state, footer=" "
+    )

@@ -1,5 +1,6 @@
 class HeaderLinkState:
     """helper to assign active class to current page in header"""
+
     def __init__(self, page):
         self.page = page
         self.review = ""
@@ -11,4 +12,3 @@ class HeaderLinkState:
     def set_corresponding_page_to_active(self):
         if self.page:
             setattr(self, self.page, "active")
-

@@ -1,16 +1,19 @@
 import random
 
+
 class InsultGenerator:
     """Randomly choose an insult"""
+
     def __init__(self, insults):
         self.insults = insults
-    
+
     def generate(self):
         return random.choice(self.insults)
 
 
 class InsultsFromFile:
     """Sequence type of insults loaded from a file"""
+
     def __init__(self, filepath):
         self.filepath = filepath
         self.insults = self._load()
@@ -31,9 +34,6 @@ class InsultsFromFile:
     def __len__(self):
         return len(self.insults)
 
-       
 
 insults_from_file = InsultsFromFile("app/insults.txt")
 insult_generator = InsultGenerator(insults=insults_from_file)
-
-
