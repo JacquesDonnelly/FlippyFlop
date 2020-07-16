@@ -28,7 +28,9 @@ login.login_view = "login"
 
 import models
 
-# TODO: Use an init / app factory + routes like miguel
+# TODO BNPR: Add deployment details to README
+
+# TODO BNPR: Use an init / app factory + routes like miguel
 # Import here is required to import the models for Alembic (flask-migrate)
 
 # TODO BNPR: Create a config file for the whole app
