@@ -1,8 +1,7 @@
 import random
 
-# TODO: BNPR get doctrings on this then black and lint everything else
-
 class InsultGenerator:
+    """Randomly choose an insult"""
     def __init__(self, insults):
         self.insults = insults
     
@@ -11,6 +10,7 @@ class InsultGenerator:
 
 
 class InsultsFromFile:
+    """Sequence type of insults loaded from a file"""
     def __init__(self, filepath):
         self.filepath = filepath
         self.insults = self._load()
