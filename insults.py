@@ -1,5 +1,7 @@
 import random
 
+# TODO: BNPR get doctrings on this then black and lint everything else
+
 class InsultGenerator:
     def __init__(self, insults):
         self.insults = insults

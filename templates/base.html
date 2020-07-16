@@ -19,12 +19,12 @@
     <div class="cover-container d-flex h-100 w-100 p-3 flex-column">
       <header class="masthead mb-auto">
         <div class="inner">
-          <h3 class="masthead-brand">FlippyFlop</h3>
+	<h3 class="masthead-brand"><a href="{{ url_for('home') }}">FlippyFlop</a></h3>
           <nav class="nav nav-masthead justify-content-center">
-            <a class="nav-link active" href="#">Review</a>
-            <a class="nav-link" href="#">Cards</a>
-            <a class="nav-link" href="#">Stats</a>
-            <a class="nav-link" href="#">Settings</a>
+		  <a class="nav-link {{ header_link_state.review }}" href="{{ url_for('home') }}">Review</a>
+	    <a class="nav-link {{ header_link_state.cards }}" href="{{ url_for('cards') }}">Cards</a>
+	    <a class="nav-link {{ header_link_state.stats }}" href="{{ url_for('stats') }}">Stats</a>
+	    <a class="nav-link {{ header_link_state.settings }}" href="{{ url_for('settings') }}">Settings</a>
           </nav>
         </div>
       </header>

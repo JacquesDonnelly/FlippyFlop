@@ -31,14 +31,29 @@ import models
 # TODO: Use an init / app factory + routes like miguel
 # Import here is required to import the models for Alembic (flask-migrate)
 
-# TODO: Create a config file for the whole app
-# TODO: Make file structure of app nice
+# TODO BNPR: Create a config file for the whole app
+# TODO BNPR: Make file structure of app nice
+
+
+class HeaderLinkState:
+    def __init__(self, page):
+        self.page = page
+        self.review = ""
+        self.cards = ""
+        self.stats = ""
+        self.settings = ""
+        self.set_corresponding_page_to_active()
+
+    def set_corresponding_page_to_active(self):
+        if self.page:
+            setattr(self, self.page, "active")
+
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for("home"))
-    if request.method == "POST": 
+    if request.method == "POST":
         user = models.User.query.filter(
             func.lower(models.User.username) == func.lower(request.form.get("username"))
         ).first()
@@ -47,7 +62,14 @@ def login():
             return redirect(url_for("login"))
         login_user(user, remember=False)
         return redirect(url_for("home"))
-    return render_template("login.html", title="Sign In", insult=insult_generator.generate())
+    header_link_state = HeaderLinkState(page=None)
+    return render_template(
+        "login.html",
+        title="Sign In",
+        insult=insult_generator.generate(),
+        header_link_state=header_link_state,
+    )
+
 
 credential_path = "./token.pickle"
 with open(credential_path, "rb") as token:
@@ -64,9 +86,10 @@ ff = FlippyFlop(
 )
 
 # TODO: refactor / and /<card_id> to be more supportive of multiple users
-# Use daemon thread to execute the ff.update_bucket request 
+# Use daemon thread to execute the ff.update_bucket request
 # Use cookies to store cards still to do today
 # Only hit ff.get_terms once on / route, then store in db rather than global
+# Also should the get_terms and get_buckets on / route be blocking?
 
 
 # TODO: Fix Accidental Double Clicking Behaviour
@@ -99,7 +122,14 @@ def home():
         REMAINING = ff.todays_cards()
         TERMS = ff.get_terms()
         phrase = generate_remaining_cards_phrase(len(REMAINING))
-        return render_template("home.html", remaining_cards_phrase=phrase, remaining=len(REMAINING), footer=" ")
+        header_link_state = HeaderLinkState(page="review")
+        return render_template(
+            "home.html",
+            remaining_cards_phrase=phrase,
+            remaining=len(REMAINING),
+            footer=" ",
+            header_link_state=header_link_state
+        )
     if request.method == "POST":
         if request.form["action"] == "start":
             next_card = random.choice(REMAINING)
@@ -114,11 +144,13 @@ def single_card(card_id):
     global REMAINING
     if request.method == "GET":
         term = TERMS.loc[card_id]
+        header_link_state = HeaderLinkState(page="review")
         return render_template(
             "card.html",
             front=term["front"].replace("\n", "<br>"),
             back=term["back"].replace("\n", "<br>"),
-            footer=generate_remaining_cards_phrase(len(REMAINING))
+            footer=generate_remaining_cards_phrase(len(REMAINING)),
+            header_link_state=header_link_state
         )
     if request.method == "POST":
         success = request.form["action"] == "success"
@@ -129,3 +161,26 @@ def single_card(card_id):
             return redirect(f"/{next_card}")
         else:
             return redirect("/")
+
+
+@app.route("/cards")
+@login_required
+def cards():
+    header_link_state = HeaderLinkState(page="cards")
+    return render_template("coming_soon.html", header_link_state=header_link_state, footer=" ")
+
+
+@app.route("/stats")
+@login_required
+def stats():
+    header_link_state = HeaderLinkState(page="stats")
+    return render_template("coming_soon.html", header_link_state=header_link_state, footer=" ")
+
+
+@app.route("/settings")
+@login_required
+def settings():
+    header_link_state = HeaderLinkState(page="settings")
+    return render_template("coming_soon.html",  header_link_state=header_link_state, footer=" ")
+
+
