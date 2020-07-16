@@ -33,7 +33,7 @@ class InsultsFromFile:
 
        
 
-insults_from_file = InsultsFromFile("./insults.txt")
+insults_from_file = InsultsFromFile("app/insults.txt")
 insult_generator = InsultGenerator(insults=insults_from_file)
 
 
