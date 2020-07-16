@@ -1,5 +1,4 @@
 """Entry Point of Flask Application"""
-# TODO BNPR: Add deployment details to README
 
 # TODO: Create a config file for the whole app
 
