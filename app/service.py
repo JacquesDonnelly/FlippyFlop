@@ -4,6 +4,7 @@ import random
 
 from googleapiclient.discovery import build
 
+from app import db
 from app.flippyflop import FlippyFlop
 
 
@@ -61,5 +62,33 @@ class RemainingCards:
         return len(self.cards)
 
 
+class TermService:
+    def __init__(self, model, service=None):
+        self.service = service
+        self.model = model
+        self.terms = None
+        if service:
+            self.fill_database()
 
-TERMS = ff.get_terms()
+    def fill_database(self):
+        self.clear_db()
+        self.get_terms()
+        self.load_terms_into_db()
+
+    def get_terms(self):
+        self.terms = self.service.get_terms()
+
+    def clear_db(self):
+        self.model.query.delete()
+        db.session.commit()
+
+    def load_terms_into_db(self):
+        data = self.prepare_terms_for_db()
+        data.to_sql("card", db.engine, index=False, if_exists="append")
+
+    def prepare_terms_for_db(self):
+        data = self.terms.reset_index()
+        data.columns = ["id", "front", "back"]
+        data["id"] = data["id"].astype(int)
+        return data
+

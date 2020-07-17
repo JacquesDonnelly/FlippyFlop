@@ -7,11 +7,12 @@ from sqlalchemy import func
 from app import models, app
 from app.base import HeaderLinkState
 from app.insults import insult_generator
-from app.service import ff, RemainingCards, TERMS
+from app.service import ff, RemainingCards
 
 # TODO: Create derrivative of render_template to better handle base requirements.
 # For example, every render template requires a HeaderLinkState
 # There may be a nice way of automating this when registering route with decorator
+# This will also help with breaking down the content in each route
 
 # TODO: refactor / and /<card_id> to be more supportive of multiple users
 # Use daemon thread to execute the ff.update_bucket request
@@ -19,7 +20,7 @@ from app.service import ff, RemainingCards, TERMS
 # Also should the get_terms and get_buckets on / route be blocking?
 # ALTERNATIVE: We want to add some reporting. Maybe implement rq with db like miguel?
 
-# TODO: Use url_for everywhere
+# TODO: Use url_for everywhere in the app
 
 def generate_remaining_cards_phrase(num_remaining_cards):
     single_card = num_remaining_cards == 1

@@ -22,3 +22,11 @@ class User(UserMixin, db.Model):
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
+
+
+class Card(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    front = db.Column(db.String(512))
+    back = db.Column(db.String(512))
+
+
