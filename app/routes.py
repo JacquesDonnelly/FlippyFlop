@@ -7,7 +7,8 @@ from sqlalchemy import func
 from app import models, app
 from app.base import HeaderLinkState
 from app.insults import insult_generator
-from app.service import ff, RemainingCards
+from app.service import ff, RemainingCards, TermService
+from app.models import Card
 
 # TODO: Create derrivative of render_template to better handle base requirements.
 # For example, every render template requires a HeaderLinkState
@@ -57,11 +58,11 @@ def login():
 @login_required
 def home():
     """view before/after reviewing cards"""
-    global TERMS
     # TODO: todays_cards queries the terms tab. This happens again in get_terms.
     if request.method == "GET":
         remaining_cards = RemainingCards(service=ff)
-        TERMS = ff.get_terms()
+        ts = TermService(model=Card, service=ff)
+        ts.fill_database()
         phrase = generate_remaining_cards_phrase(len(remaining_cards))
         header_link_state = HeaderLinkState(page="review")
         resp = make_response(render_template(
@@ -87,16 +88,16 @@ def home():
 @login_required
 def single_card(card_id):
     """view of single card with correct/incorrect buttons"""
-    global TERMS
+    ts = TermService(model=Card, service=ff)
     remaining_cards_cookie = request.cookies.get('cards')
     remaining_cards = RemainingCards(string=remaining_cards_cookie)
     if request.method == "GET":
-        term = TERMS.loc[card_id]
+        term = ts.card_by_id(card_id)
         header_link_state = HeaderLinkState(page="review")
         return render_template(
             "card.html",
-            front=term["front"].replace("\n", "<br>"),
-            back=term["back"].replace("\n", "<br>"),
+            front=term.front.replace("\n", "<br>"),
+            back=term.back.replace("\n", "<br>"),
             footer=generate_remaining_cards_phrase(len(remaining_cards)),
             header_link_state=header_link_state,
         )

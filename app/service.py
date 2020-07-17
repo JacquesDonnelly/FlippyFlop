@@ -24,6 +24,11 @@ ff = FlippyFlop(
 
 # TODO: A single object API for cards and terms would be better
 
+# TODO: Cards should be in DB and not google sheets
+# Below (RemainingCards and TermService)is a temp solution to enable 
+# multiple workers in the app...
+# In the long run all cards will be stored in database and not on 
+# Google sheets. 
 
 class RemainingCards:
     """Object for cards cookie"""
@@ -67,8 +72,9 @@ class TermService:
         self.service = service
         self.model = model
         self.terms = None
-        if service:
-            self.fill_database()
+
+    def card_by_id(self, card_id):
+        return self.model.query.get(card_id)
 
     def fill_database(self):
         self.clear_db()
