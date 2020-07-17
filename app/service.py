@@ -36,20 +36,20 @@ class RemainingCards:
         if self.string:
             self.from_string(string)
         elif self.service:
-            self.get_and_shuffle_cards()
+            self.from_service()
 
-    def get_and_shuffle_cards(self):
-        self.get_todays_cards()
+    def from_string(self, string):
+        self.cards = string.split(self.delimiter)
+
+    def from_service(self):
+        self.get_cards_from_service()
         self.shuffle_cards()
 
-    def get_todays_cards(self):
+    def get_cards_from_service(self):
         self.cards = self.service.todays_cards()
 
     def shuffle_cards(self):
         random.shuffle(self.cards)
-
-    def from_string(self, string):
-        self.cards = string.split(self.delimiter)
 
     def pop(self):
         return self.cards.pop()
