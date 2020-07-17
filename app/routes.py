@@ -17,7 +17,6 @@ from app.models import Card
 
 # TODO: refactor / and /<card_id> to be more supportive of multiple users
 # Use daemon thread to execute the ff.update_bucket request
-# Only hit ff.get_terms once on / route, then store in db rather than global
 # Also should the get_terms and get_buckets on / route be blocking?
 # ALTERNATIVE: We want to add some reporting. Maybe implement rq with db like miguel?
 
