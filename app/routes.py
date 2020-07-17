@@ -1,13 +1,13 @@
 import random
 
-from flask import redirect, request, flash, render_template, url_for
+from flask import redirect, request, flash, render_template, url_for, make_response
 from flask_login import current_user, login_user, login_required
 from sqlalchemy import func
 
 from app import models, app
 from app.base import HeaderLinkState
 from app.insults import insult_generator
-from app.service import ff, REMAINING, TERMS
+from app.service import ff, RemainingCards, TERMS
 
 # TODO: Create derrivative of render_template to better handle base requirements.
 # For example, every render template requires a HeaderLinkState
@@ -15,13 +15,11 @@ from app.service import ff, REMAINING, TERMS
 
 # TODO: refactor / and /<card_id> to be more supportive of multiple users
 # Use daemon thread to execute the ff.update_bucket request
-# Use cookies to store cards still to do today
 # Only hit ff.get_terms once on / route, then store in db rather than global
 # Also should the get_terms and get_buckets on / route be blocking?
 # ALTERNATIVE: We want to add some reporting. Maybe implement rq with db like miguel?
 
 # TODO: Use url_for everywhere
-
 
 def generate_remaining_cards_phrase(num_remaining_cards):
     single_card = num_remaining_cards == 1
@@ -59,24 +57,29 @@ def login():
 def home():
     """view before/after reviewing cards"""
     global TERMS
-    global REMAINING
     # TODO: todays_cards queries the terms tab. This happens again in get_terms.
     if request.method == "GET":
-        REMAINING = ff.todays_cards()
+        remaining_cards = RemainingCards(service=ff)
         TERMS = ff.get_terms()
-        phrase = generate_remaining_cards_phrase(len(REMAINING))
+        phrase = generate_remaining_cards_phrase(len(remaining_cards))
         header_link_state = HeaderLinkState(page="review")
-        return render_template(
+        resp = make_response(render_template(
             "home.html",
             remaining_cards_phrase=phrase,
-            remaining=len(REMAINING),
+            remaining=len(remaining_cards),
             footer=" ",
             header_link_state=header_link_state,
-        )
+        ))
+        resp.set_cookie("cards", str(remaining_cards))
+        return resp
     if request.method == "POST":
         if request.form["action"] == "start":
-            next_card = random.choice(REMAINING)
-            return redirect(f"/{next_card}")
+            remaining_cards_cookie = request.cookies.get('cards')
+            remaining_cards = RemainingCards(string=remaining_cards_cookie)
+            next_card = remaining_cards.pop()
+            resp = make_response(redirect(f"/{next_card}"))
+            resp.set_cookie('cards', str(remaining_cards))
+            return resp
 
 
 @app.route("/<card_id>", methods=["GET", "POST"])
@@ -84,7 +87,8 @@ def home():
 def single_card(card_id):
     """view of single card with correct/incorrect buttons"""
     global TERMS
-    global REMAINING
+    remaining_cards_cookie = request.cookies.get('cards')
+    remaining_cards = RemainingCards(string=remaining_cards_cookie)
     if request.method == "GET":
         term = TERMS.loc[card_id]
         header_link_state = HeaderLinkState(page="review")
@@ -92,16 +96,17 @@ def single_card(card_id):
             "card.html",
             front=term["front"].replace("\n", "<br>"),
             back=term["back"].replace("\n", "<br>"),
-            footer=generate_remaining_cards_phrase(len(REMAINING)),
+            footer=generate_remaining_cards_phrase(len(remaining_cards)),
             header_link_state=header_link_state,
         )
     if request.method == "POST":
         success = request.form["action"] == "success"
         ff.update_bucket(card_id, success)
-        REMAINING.remove(card_id)
-        if REMAINING:
-            next_card = random.choice(REMAINING)
-            return redirect(f"/{next_card}")
+        if remaining_cards:
+            next_card = remaining_cards.pop()
+            resp = make_response(redirect(f"/{next_card}"))
+            resp.set_cookie('cards', str(remaining_cards))
+            return resp
         else:
             return redirect("/")
 
