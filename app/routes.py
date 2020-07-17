@@ -23,6 +23,7 @@ from app.models import Card
 
 # TODO: Use url_for everywhere in the app
 
+
 def generate_remaining_cards_phrase(num_remaining_cards):
     single_card = num_remaining_cards == 1
     if single_card:
@@ -65,22 +66,24 @@ def home():
         ts.fill_database()
         phrase = generate_remaining_cards_phrase(len(remaining_cards))
         header_link_state = HeaderLinkState(page="review")
-        resp = make_response(render_template(
-            "home.html",
-            remaining_cards_phrase=phrase,
-            remaining=len(remaining_cards),
-            footer=" ",
-            header_link_state=header_link_state,
-        ))
+        resp = make_response(
+            render_template(
+                "home.html",
+                remaining_cards_phrase=phrase,
+                remaining=len(remaining_cards),
+                footer=" ",
+                header_link_state=header_link_state,
+            )
+        )
         resp.set_cookie("cards", str(remaining_cards))
         return resp
     if request.method == "POST":
         if request.form["action"] == "start":
-            remaining_cards_cookie = request.cookies.get('cards')
+            remaining_cards_cookie = request.cookies.get("cards")
             remaining_cards = RemainingCards(string=remaining_cards_cookie)
             next_card = remaining_cards.pop()
             resp = make_response(redirect(f"/{next_card}"))
-            resp.set_cookie('cards', str(remaining_cards))
+            resp.set_cookie("cards", str(remaining_cards))
             return resp
 
 
@@ -89,7 +92,7 @@ def home():
 def single_card(card_id):
     """view of single card with correct/incorrect buttons"""
     ts = TermService(model=Card, service=ff)
-    remaining_cards_cookie = request.cookies.get('cards')
+    remaining_cards_cookie = request.cookies.get("cards")
     remaining_cards = RemainingCards(string=remaining_cards_cookie)
     if request.method == "GET":
         term = ts.card_by_id(card_id)
@@ -107,7 +110,7 @@ def single_card(card_id):
         if remaining_cards:
             next_card = remaining_cards.pop()
             resp = make_response(redirect(f"/{next_card}"))
-            resp.set_cookie('cards', str(remaining_cards))
+            resp.set_cookie("cards", str(remaining_cards))
             return resp
         else:
             return redirect("/")

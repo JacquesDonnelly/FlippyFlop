@@ -25,13 +25,15 @@ ff = FlippyFlop(
 # TODO: A single object API for cards and terms would be better
 
 # TODO: Cards should be in DB and not google sheets
-# Below (RemainingCards and TermService)is a temp solution to enable 
+# Below (RemainingCards and TermService)is a temp solution to enable
 # multiple workers in the app...
-# In the long run all cards will be stored in database and not on 
-# Google sheets. 
+# In the long run all cards will be stored in database and not on
+# Google sheets.
+
 
 class RemainingCards:
     """Object for cards cookie"""
+
     def __init__(self, service=None, string=None):
         self.service = service
         self.cards = []
@@ -97,4 +99,3 @@ class TermService:
         data.columns = ["id", "front", "back"]
         data["id"] = data["id"].astype(int)
         return data
-
