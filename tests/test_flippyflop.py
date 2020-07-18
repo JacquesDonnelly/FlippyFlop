@@ -1,11 +1,13 @@
-from .functional_test_data import buckets, tests, terms_to_add
-from freezegun import freeze_time
-from googleapiclient.discovery import build
-import flippyflop
 import datetime
 import os
 import pickle
+
+from freezegun import freeze_time
+from googleapiclient.discovery import build
 import pytest
+
+from .functional_test_data import buckets, tests, terms_to_add
+from app import flippyflop
 
 
 PROD_SPREADSHEET_ID = "1eZL2eOCFKxGkg7bYaEmp-urWqWBfUNx73n_1oR2RkpM"
@@ -22,7 +24,7 @@ TEST_SPREADSHEET_ID = "1UDLGeqhVxfHJF5zk2EWRnWuQrZLQkCbwdg9loyd1nFg"
 @pytest.fixture(scope="function")
 def dummy_service():
     """create consistent testing spreadsheet and yield service"""
-    credential_path = "./token.pickle"
+    credential_path = "./app/auth/token.pickle"
     with open(credential_path, "rb") as token:
         creds = pickle.load(token)
 
