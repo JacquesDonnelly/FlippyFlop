@@ -7,9 +7,9 @@
 		<div class="side front">{% autoescape false %} {{ front }}  {% endautoescape %}</div>
 		<div class="side back">{% autoescape false %} {{ back }}  {% endautoescape %}</div>
 	</div>
-	<form method="post">
-	<button type="submit" name="action" value="success" class="btn btn-success btn-block btn-lg">Easy Peasy Lemon Squeezy</button>
-	<button type="submit" name="action" value="failure" class="btn btn-danger btn-block btn-lg">Stressed Depressed Lemon Zest</button>
+	<form id="card-form" method="post">
+	<button id="correct" type="submit" name="action" value="success" class="btn btn-success btn-block btn-lg">Easy Peasy Lemon Squeezy</button>
+	<button id="incorrect" type="submit" name="action" value="failure" class="btn btn-danger btn-block btn-lg">Stressed Depressed Lemon Zest</button>
 	</form>
 </div>
 

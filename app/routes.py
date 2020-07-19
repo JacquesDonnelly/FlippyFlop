@@ -32,6 +32,24 @@ def generate_remaining_cards_phrase(num_remaining_cards):
     return f"{num_remaining_cards} {noun} Remaining"
 
 
+@app.route("/dummy", methods=["GET", "POST"])
+def dummy():
+    if request.method == "GET":
+        header_link_state = HeaderLinkState(page="review")
+        return render_template(
+            "card.html",
+            front="This is a dummy card",
+            back="LOLOLOLOL",
+            footer="750 Cards remaining bish",
+            header_link_state=header_link_state,
+        )
+    if request.method == "POST":
+        print("result sent")
+        import time
+        time.sleep(2)
+        return redirect("/dummy")
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
