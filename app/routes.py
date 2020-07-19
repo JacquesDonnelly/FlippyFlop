@@ -32,6 +32,11 @@ def generate_remaining_cards_phrase(num_remaining_cards):
     return f"{num_remaining_cards} {noun} Remaining"
 
 
+@app.route('/favicon.ico')
+def favicon():
+    return redirect(url_for('static', filename='favicon.ico'))
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:

@@ -3,8 +3,12 @@ window.onload=function() {
 	success_btn = document.getElementById("correct")
 	failure_btn = document.getElementById("incorrect")
 	
-	form.addEventListener("submit", function() {
-   		success_btn.setAttribute("disabled", "")
-    		failure_btn.setAttribute("disabled", "")
+	form.addEventListener("click", function(e) {
+		if ( form.getAttribute('attempted') == 'true' ){
+			e.preventDefault()
+		}
+		else {
+			form.setAttribute('attempted', 'true')
+		}
 	})
 }
