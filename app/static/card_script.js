@@ -4,7 +4,6 @@ window.onload=function() {
 	failure_btn = document.getElementById("incorrect")
 	
 	form.addEventListener("submit", function() {
-		console.log('hello')
    		success_btn.setAttribute("disabled", "")
     		failure_btn.setAttribute("disabled", "")
 	})
