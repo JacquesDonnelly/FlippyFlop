@@ -3,16 +3,12 @@ import os
 import pickle
 
 from freezegun import freeze_time
-from googleapiclient.discovery import build
 import pytest
 
 from .functional_test_data import buckets, tests, terms_to_add
 from app import flippyflop
+from tests.fixtures import generate_dummy_service
 
-
-PROD_SPREADSHEET_ID = "1eZL2eOCFKxGkg7bYaEmp-urWqWBfUNx73n_1oR2RkpM"
-
-TEST_SPREADSHEET_ID = "1UDLGeqhVxfHJF5zk2EWRnWuQrZLQkCbwdg9loyd1nFg"
 
 # TODO: reduce api calls with class scope of dummy service
 
@@ -20,57 +16,13 @@ TEST_SPREADSHEET_ID = "1UDLGeqhVxfHJF5zk2EWRnWuQrZLQkCbwdg9loyd1nFg"
 
 # TODO: replace pytest-freezegun with just freezegun maybe?
 
+PROD_SPREADSHEET_ID = "1eZL2eOCFKxGkg7bYaEmp-urWqWBfUNx73n_1oR2RkpM"
 
-@pytest.fixture(scope="function")
-def dummy_service():
-    """create consistent testing spreadsheet and yield service"""
-    credential_path = "./app/auth/token.pickle"
-    with open(credential_path, "rb") as token:
-        creds = pickle.load(token)
-
-    service = build("sheets", "v4", credentials=creds)
-
-    # TODO: refactor, extract  and generalize the sheet standardization
-    service.spreadsheets().values().clear(
-        spreadsheetId=TEST_SPREADSHEET_ID, range="terms!A:Z"
-    ).execute()
-    service.spreadsheets().values().clear(
-        spreadsheetId=TEST_SPREADSHEET_ID, range="buckets!A:Z"
-    ).execute()
-
-    buckets_values = [
-        ["card_id", "timestamp_tested", "bucket_after_test"],
-        [1, 1577865600, 1],  # 2020-01-01 08:00:00
-        [2, 1577865660, 2],  # 2020-01-01 08:01:00
-    ]
-
-    terms_values = [
-        ["card_id", "front", "back"],
-        [1, "Capital of France?", "Paris"],
-        [2, "Square root of four?", "Two"],
-        [3, "How many legs does a horse have?", "Four"],
-    ]
-
-    body = {"values": terms_values}
-    service.spreadsheets().values().update(
-        spreadsheetId=TEST_SPREADSHEET_ID,
-        range="terms!A:C",
-        body=body,
-        valueInputOption="RAW",
-    ).execute()
-
-    body = {"values": buckets_values}
-    service.spreadsheets().values().update(
-        spreadsheetId=TEST_SPREADSHEET_ID,
-        range="buckets!A:C",
-        body=body,
-        valueInputOption="RAW",
-    ).execute()
-
-    return service
+TEST_SPREADSHEET_ID = "1UDLGeqhVxfHJF5zk2EWRnWuQrZLQkCbwdg9loyd1nFg"
 
 
-def test_get_terms(dummy_service):
+def test_get_terms(generate_dummy_service):
+    dummy_service = generate_dummy_service()
     ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
     result = ff.get_terms()
 
@@ -79,7 +31,8 @@ def test_get_terms(dummy_service):
     assert result.iloc[2]["front"] == "How many legs does a horse have?"
 
 
-def test_get_buckets(dummy_service):
+def test_get_buckets(generate_dummy_service):
+    dummy_service = generate_dummy_service()
     ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
     result = ff.get_buckets()
 
@@ -101,8 +54,9 @@ def test_get_buckets(dummy_service):
         ("2020-01-20 14:34:25", ["1", "2", "4"]),
     ],
 )
-def test_todays_buckets(date, expected, freezer):
+def test_todays_buckets(date, expected, freezer, generate_dummy_service):
     # assuming a ff.start_date of 2019-12-31
+    dummy_service = generate_dummy_service()
     with freeze_time(date, tick=True):
         ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
         result = ff._todays_buckets()
@@ -113,8 +67,9 @@ def test_todays_buckets(date, expected, freezer):
     "date,expected",
     [("2020-01-01 10:00:00", ["3"]), ("2020-01-02 10:00:00", ["1", "2", "3"]),],
 )
-def test_todays_cards(dummy_service, freezer, date, expected):
+def test_todays_cards(generate_dummy_service, freezer, date, expected):
     # assuming a ff.start_date of 2019-12-31 (and in the sheet)
+    dummy_service = generate_dummy_service()
     with freeze_time(date, tick=True):
         ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
         result = ff.todays_cards()
@@ -148,7 +103,8 @@ def test_todays_cards(dummy_service, freezer, date, expected):
         ),
     ],
 )
-def test_update_bucket(card, success, expected, freezer, dummy_service):
+def test_update_bucket(card, success, expected, freezer, generate_dummy_service):
+    dummy_service = generate_dummy_service()
     ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
     ff.update_bucket(card, success)
     # TODO: Refactor. After adding the throttle decorator this is messy.
@@ -163,7 +119,8 @@ def test_update_bucket(card, success, expected, freezer, dummy_service):
     assert [row[:-1] for row in result] == [row[:-1] for row in expected]
 
 
-def test_add_term(dummy_service):
+def test_add_term(generate_dummy_service):
+    dummy_service = generate_dummy_service()
     ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
     ff.add_term(
         front="What should horses in training wear in the stable?", back="A Blanket",
@@ -175,12 +132,13 @@ def test_add_term(dummy_service):
     ]
 
 
-def test_functional(dummy_service, freezer):
+def test_functional(generate_dummy_service, freezer):
     """a functional test where cards are tested on sequential days
 
     We assert that the cards are placed into the correct bucket each day
     as well as we are testing the correct cards on each day
     """
+    dummy_service = generate_dummy_service()
     ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
 
     first_test_date = datetime.datetime(2020, 1, 2, 8)

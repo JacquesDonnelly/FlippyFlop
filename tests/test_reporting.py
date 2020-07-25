@@ -1,10 +1,18 @@
-from reporting import correct_on_date
+from reporting.deck import Deck
+import pytest
+from tests.fixtures import generate_dummy_service
 
-def test_correct_on_date():
-    # 1. Create fixture that adds arbitrary cards on arbitrary dates
-    # 2. Create a test case. We want not all cards to be tested on that day and 
-    # some to be correct and some to be incorrect
-    # 3. Assertion should just be what cards were correct on what day
+# TODO: BNPR centralize these constant values... conftest?
+PROD_SPREADSHEET_ID = "1eZL2eOCFKxGkg7bYaEmp-urWqWBfUNx73n_1oR2RkpM"
 
-def test_calculate_stats():
-    # 1. Think about "card" object first before writing this 
+TEST_SPREADSHEET_ID = "1UDLGeqhVxfHJF5zk2EWRnWuQrZLQkCbwdg9loyd1nFg"
+
+@pytest.mark.skip(reason="wip")
+def test_deck_from_dataframe(generate_dummy_service):
+    dummy_service = generate_dummy_service(buckets_values="blah", terms_values="blooh")
+    ff = flippyflop.FlippyFlop(dummy_service, TEST_SPREADSHEET_ID)
+    df = ff.get_buckets()
+     
+    deck = Deck.from_df(df)
+
+    assert "the deck is what we expect it to be"
