@@ -52,15 +52,21 @@ class FlippyFlop:
         terms_df = pd.DataFrame(values[1:], columns=values[0])
         return terms_df.set_index("card_id")
 
+    # TODO BNPR: refactor to get_current_buckets
     def get_buckets(self) -> pd.DataFrame:
         """Current bucket of each term"""
-        values = self._get_values(tab="buckets", cell_range="A:C")
-        bucket_df = pd.DataFrame(values[1:], columns=values[0])
+        bucket_df = self.get_all_buckets()
         return (
             bucket_df.sort_values("timestamp_tested")
             .groupby("card_id")[["bucket_after_test", "timestamp_tested"]]
             .last()
         )
+
+    def get_all_buckets(self) -> pd.DataFrame:
+        """Get everything from the buckets tab"""
+        values = self._get_values(tab="buckets", cell_range="A:C")
+        bucket_df = pd.DataFrame(values[1:], columns=values[0])
+        return bucket_df
 
     def todays_cards(self) -> List[str]:
         """get ids of cards left to do today"""
@@ -134,11 +140,16 @@ class FlippyFlop:
 
     def _todays_buckets(self) -> List[str]:
         """retreive what buckets we should be reviewing today"""
+        return self._buckets_for_timestamp(datetime.datetime.utcnow())
+
+
+    def _buckets_for_timestamp(self, timestamp):
         buckets = []
         for period, box in self.schedule:
-            if (datetime.datetime.utcnow() - self.day_zero).days % period == 0:
+            if (timestamp - self.day_zero).days % period == 0:
                 buckets.append(str(box))
         return buckets
+
 
     @throttle
     def _get_values(self, tab: str, cell_range: str) -> List[List[str]]:
