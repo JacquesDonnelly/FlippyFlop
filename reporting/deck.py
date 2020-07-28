@@ -16,9 +16,9 @@ class Schedule:
         self.day_zero = datetime.datetime(2019, 12, 31)
 
     def buckets_for_timestamp(self, timestamp):
-        """retreive waht buckets we should do on a given timestamp"""
+        """retreive what buckets we should do on a given timestamp"""
         buckets = []
-        for period, box in self.schedule:
+        for period, box in self.day_gaps:
             if (timestamp - self.day_zero).days % period == 0:
                 buckets.append(str(box))
         return buckets
@@ -39,6 +39,25 @@ class Card:
         self.id = _id
         self.results = results
         self.test_dates = test_dates
+        self._bucket = None
+
+    @property
+    def current_bucket(self):
+        if self._bucket:
+            pass
+        else:
+            self._bucket = self._resolve_bucket()
+
+        return self._bucket
+
+    def _resolve_bucket(self):
+        bucket = 1
+        for result in self.results:
+            if result:
+                bucket = min(5, bucket + 1)
+            else:
+                bucket = max(1, bucket - 1) 
+        return bucket
 
 
 class Deck:
@@ -49,7 +68,18 @@ class Deck:
         self.schedule = schedule
 
     def count_to_be_tested_today(self) -> int:
-        pass
+        todays_buckets = self.schedule.todays_buckets()
+        todays_buckets = [int(bucket) for bucket in todays_buckets]
+        cards_in_todays_bucket = [
+            card for card in self.cards
+            if card.current_bucket in todays_buckets
+        ]
+        import pdb; pdb.set_trace()
+        # TODO: Currently we are freezing time but still have "future" results
+        # in our card. So we should generalize Card._resolve_bucket to 
+        # Card._resolve_bucket_on_date. Then we can test much better and 
+        # widen scope for future stats
+        return len(cards_in_todays_bucket)
 
     def count_completed_so_far_today(self) -> int:
         pass

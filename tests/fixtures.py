@@ -7,10 +7,12 @@ PROD_SPREADSHEET_ID = "1eZL2eOCFKxGkg7bYaEmp-urWqWBfUNx73n_1oR2RkpM"
 
 TEST_SPREADSHEET_ID = "1UDLGeqhVxfHJF5zk2EWRnWuQrZLQkCbwdg9loyd1nFg"
 
+
 @pytest.fixture(scope="function")
 def generate_dummy_service():
-
-    def get_service(buckets_values: Optional[List] = None, terms_values: Optional[List] = None):
+    def get_service(
+        buckets_values: Optional[List] = None, terms_values: Optional[List] = None
+    ):
         if not buckets_values:
             buckets_values = [
                 ["card_id", "timestamp_tested", "bucket_after_test"],
@@ -36,9 +38,8 @@ def generate_dummy_service():
     return get_service
 
 
-
 # TODO: BNPR what's the type of the service? add to typing everywhere
-def build_service(credential_path: str): 
+def build_service(credential_path: str):
     with open(credential_path, "rb") as token:
         creds = pickle.load(token)
 
