@@ -35,6 +35,8 @@ class Card:
         """
         results should have all test dates up to and including today
         True for correct, False for incorrect...
+
+        It is assumed the results and test_dates are in the correct order
         """
         self.id = _id
         self.results = results
@@ -46,13 +48,16 @@ class Card:
         if self._bucket:
             pass
         else:
-            self._bucket = self._resolve_bucket()
+            today = datetime.datetime.utcnow()
+            self._bucket = self.resolve_bucket_on_date(today)
 
         return self._bucket
 
-    def _resolve_bucket(self):
+
+    def resolve_bucket_on_date(self, date: datetime.datetime) -> int:
+        filtered_test_dates = [test for test in self.test_dates if test < date]
         bucket = 1
-        for result in self.results:
+        for result, _ in zip(self.results, filtered_test_dates):
             if result:
                 bucket = min(5, bucket + 1)
             else:
@@ -68,18 +73,17 @@ class Deck:
         self.schedule = schedule
 
     def count_to_be_tested_today(self) -> int:
+        return self.count_to_be_tested_on_date(datetime.datetime.utcnow())
+
+    def count_to_be_tested_on_date(self, date) -> int:
         todays_buckets = self.schedule.todays_buckets()
         todays_buckets = [int(bucket) for bucket in todays_buckets]
         cards_in_todays_bucket = [
             card for card in self.cards
-            if card.current_bucket in todays_buckets
+            if card.resolve_bucket_on_date(date) in todays_buckets
         ]
-        import pdb; pdb.set_trace()
-        # TODO: Currently we are freezing time but still have "future" results
-        # in our card. So we should generalize Card._resolve_bucket to 
-        # Card._resolve_bucket_on_date. Then we can test much better and 
-        # widen scope for future stats
         return len(cards_in_todays_bucket)
+        
 
     def count_completed_so_far_today(self) -> int:
         pass

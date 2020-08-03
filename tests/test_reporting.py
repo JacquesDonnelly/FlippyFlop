@@ -95,6 +95,7 @@ def test_card_by_id(_id, expected):
     assert card.test_dates == expected["test_dates"]
 
 
+# TODO: NEXT. Check these dates, the dates above and the day_zero in schedule
 @pytest.mark.parametrize(
     "date,expected",
     [
@@ -138,4 +139,5 @@ def test_card_current_bucket(results, expected):
     ]
     card = Card(_id=420, results=results, test_dates=test_dates)
 
-    assert card.current_bucket == expected
+    with freeze_time(test_dates[-1] + datetime.timedelta(minutes=5)):
+        assert card.current_bucket == expected
