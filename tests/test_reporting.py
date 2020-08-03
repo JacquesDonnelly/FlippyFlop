@@ -11,8 +11,10 @@ PROD_SPREADSHEET_ID = "1eZL2eOCFKxGkg7bYaEmp-urWqWBfUNx73n_1oR2RkpM"
 TEST_SPREADSHEET_ID = "1UDLGeqhVxfHJF5zk2EWRnWuQrZLQkCbwdg9loyd1nFg"
 
 
+# TODO: This dummy deck should be used for the from_df method. Others tests dont need it.
+# I.e. we can just create the deck from card objects and not hit the google service...
 @pytest.fixture
-def dummy_deck(generate_dummy_service):
+def live_dummy_deck(generate_dummy_service):
     buckets_values = [
         ["card_id", "timestamp_tested", "bucket_after_test"],
         [1, 1578166320, 1],  # "2020-01-04 19:32:00"
@@ -44,18 +46,18 @@ def dummy_deck(generate_dummy_service):
     return deck
 
 
-def test_deck_from_dataframe(dummy_deck):
+def test_deck_from_dataframe(live_dummy_deck):
 
-    assert len(dummy_deck.cards) == 6
-    assert dummy_deck.card_by_id(1).test_dates == [
+    assert len(live_dummy_deck.cards) == 6
+    assert live_dummy_deck.card_by_id(1).test_dates == [
         datetime.datetime(2020, 1, 4, 19, 32),
         datetime.datetime(2020, 1, 5, 19, 32),
     ]
-    assert dummy_deck.card_by_id(2).results == [True, True]
-    assert dummy_deck.card_by_id(3).results == [True]
-    assert dummy_deck.card_by_id(4).results == [False, True]
-    assert dummy_deck.card_by_id(5).results == [True, False]
-    assert dummy_deck.card_by_id(6).test_dates == [datetime.datetime(2020, 1, 4, 20, 1)]
+    assert live_dummy_deck.card_by_id(2).results == [True, True]
+    assert live_dummy_deck.card_by_id(3).results == [True]
+    assert live_dummy_deck.card_by_id(4).results == [False, True]
+    assert live_dummy_deck.card_by_id(5).results == [True, False]
+    assert live_dummy_deck.card_by_id(6).test_dates == [datetime.datetime(2020, 1, 4, 20, 1)]
 
 
 @pytest.mark.parametrize(
@@ -94,19 +96,32 @@ def test_card_by_id(_id, expected):
     assert card.results == expected["results"]
     assert card.test_dates == expected["test_dates"]
 
+# TODO: NEXT: fin a dummy_deck that doesn't need the service. 
+# Then use it in test_deck_count_to_be_tested_today
+@pytest.fixture
+def dummy_deck():
+    _ids = [1,2,3]
+    results = [[True], [False], [True]]
+    test_dates = [
+        [datetime.datetime(2020,1,1,9,1)],
+        [datetime.datetime(2020,1,1,9,2)],
+        [datetime.datetime(2020,1,1,9,3)],
+    ]
+    cards = []
+    for idx, _id in enumerate(_ids):
+        cards.append(Card(_id, results[idx], test_dates[idx]
 
-# TODO: NEXT. Check these dates, the dates above and the day_zero in schedule
+
+
 @pytest.mark.parametrize(
     "date,expected",
     [
         ("2020-01-01 09:55:00", 6),
-        ("2020-01-02 10:02:30", 6),
-        ("2020-01-03 05:02:30", 4),
     ],
 )
-def test_deck_count_to_be_tested_today(dummy_deck, date, expected):
+def test_deck_count_to_be_tested_today(live_dummy_deck, date, expected):
     with freeze_time(date):
-        result = dummy_deck.count_to_be_tested_today()
+        result = live_dummy_deck.count_to_be_tested_today()
 
     assert result == expected
 
