@@ -18,7 +18,7 @@ spreadsheet_id = "1eZL2eOCFKxGkg7bYaEmp-urWqWBfUNx73n_1oR2RkpM"
 ff = FlippyFlop(
     service=service,
     spreadsheet_id=spreadsheet_id,
-    day_zero=datetime.datetime(2020, 7, 7),
+    day_zero=datetime.datetime(2020, 9, 21),
     throttle_time=0,
 )
 
